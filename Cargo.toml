@@ -2,3 +2,6 @@
 name = "structures"
 version = "0.1.0"
 authors = ["Nathan Lilienthal <nathan@nixpulvis.com>"]
+
+[lib]
+plugin = true

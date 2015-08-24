@@ -1,63 +1,55 @@
-//! Lists are ordered sequences of values, which can be iterated over.
-//!
-//! Within the context of a type system lists may be all of one type, or of
-//! many types. This library will eventually have implementations for all of
-//! these types.
-//!
-//! All lists implement the standard collection traits, `FromIterator`, and
-//! `IntoIterator`. This allows lists to be to be both easily converted to
-//! and from. Additionally all lists implement the traits `Clone`, `Debug`,
-//! `PartialEq`, `Eq`, `Hash`, `PartialOrd`, `Ord`.
-//!
-//! # Examples
-//!
-//! ```
-//! use std::iter::FromIterator;
-//! use structures::list::List;
-//!
-//! // Easily create a linked list.
-//! let list = List::from_iter((0..100));
-//! assert_eq!(list.len(), 100);
-//! ```
-
 use std::mem;
 use std::iter::FromIterator;
 
-/// A List<T> is conceptually one of: `Cost<T, List<T>>`, or `Nil`.
+#[macro_export]
+macro_rules! linked_list {
+    ($($x:expr),*) => { LinkedList::new()$(.push($x))* };
+}
+
+/// A convenience type for results which are used to move ownership back to
+/// the caller in the case of an error.
+///
+/// A simple example of this is the remove function which when called with an
+/// index that is out of bounds returns `Err(original_list)` thus transferring
+/// ownership. This allows for chaining functions, while still allowing to
+/// recover from errors easily.
+pub type MoveResult<T, U> = Result<T, LinkedList<U>>;
+
+/// A simple recursively defined linked list enumeration type.
 ///
 /// This implementation of a linked list is purely for the purpose of learning,
 /// and as reference of the details of a recursive type. You probably shouldn't
 /// use this data structure in real world applications.
 ///
 #[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
-pub enum List<T> {
-    Cons(T, Box<List<T>>),
+pub enum LinkedList<T> {
+    Cons(T, Box<LinkedList<T>>),
     Nil,
 }
 
 /// Iterator for lists by reference.
 pub struct Iter<'a, T: 'a> {
-    current: &'a List<T>,
+    current: &'a LinkedList<T>,
 }
 
 /// Iterator for lists by value.
 pub struct IntoIter<T> {
-    current: List<T>,
+    current: LinkedList<T>,
 }
 
-impl<'a, T> List<T> {
+impl<'a, T> LinkedList<T> {
     /// Return a new empty linked list. This is semantically equivlent to
     /// writing `List::Nil`.
     ///
     /// # Examples
     ///
     /// ```
-    /// use structures::list::List;
+    /// use structures::list::LinkedList;
     ///
-    /// assert_eq!(List::new(), List::Nil::<u32>);
+    /// assert_eq!(LinkedList::new(), LinkedList::Nil::<u32>);
     /// ```
-    pub fn new() -> List<T> {
-        List::Nil
+    pub fn new() -> LinkedList<T> {
+        LinkedList::Nil
     }
 
     /// Determine if a linked list is empty.
@@ -65,14 +57,14 @@ impl<'a, T> List<T> {
     /// # Examples
     ///
     /// ```
-    /// use structures::list::List;
+    /// use structures::list::LinkedList;
     ///
-    /// assert!(List::Nil::<u32>.is_empty());
+    /// assert!(LinkedList::Nil::<u32>.is_empty());
     /// ```
     pub fn is_empty(&self) -> bool {
         match *self {
-            List::Cons(_, _) => false,
-            List::Nil => true,
+            LinkedList::Cons(_, _) => false,
+            LinkedList::Nil => true,
         }
     }
 
@@ -83,9 +75,9 @@ impl<'a, T> List<T> {
     /// # Examples
     ///
     /// ```
-    /// use structures::list::List;
+    /// use structures::list::LinkedList;
     ///
-    /// assert_eq!(List::new().push(1).len(), 1);
+    /// assert_eq!(LinkedList::new().push(1).len(), 1);
     /// ```
     pub fn len(&self) -> usize {
         self.into_iter().count()
@@ -98,9 +90,9 @@ impl<'a, T> List<T> {
     /// # Examples
     ///
     /// ```
-    /// use structures::list::List;
+    /// use structures::list::LinkedList;
     ///
-    /// let list_a = List::new().push(2).push(1);
+    /// let list_a = LinkedList::new().push(2).push(1);
     /// let list_b = list_a.push(0);
     ///
     /// assert_eq!(list_b.len(), 3);
@@ -108,8 +100,8 @@ impl<'a, T> List<T> {
     /// // Compiler error: use of moved value: `list_a`
     /// // assert_eq!(list_a.len(), 3);
     /// ```
-    pub fn push(self, item: T) -> List<T> {
-        List::Cons(item, Box::new(self))
+    pub fn push(self, item: T) -> LinkedList<T> {
+        LinkedList::Cons(item, Box::new(self))
     }
 
     /// Return both the first and rest of a list, or `None` if called on `Nil`.
@@ -120,21 +112,21 @@ impl<'a, T> List<T> {
     /// # Examples
     ///
     /// ```
-    /// use structures::list::List;
+    /// use structures::list::LinkedList;
     ///
-    /// let list = List::new().push("bye").push("hi");
+    /// let list = LinkedList::new().push("bye").push("hi");
     /// let (first, rest) = list.pop().unwrap();
     ///
     /// assert_eq!(first, "hi");
-    /// assert_eq!(rest, List::new().push("bye"));
+    /// assert_eq!(rest, LinkedList::new().push("bye"));
     ///
     /// // Compiler error: use of moved value: `list`
     /// // assert_eq!(list.len(), 2);
     /// ```
-    pub fn pop(self) -> Option<(T, List<T>)> {
+    pub fn pop(self) -> Option<(T, LinkedList<T>)> {
         match self {
-            List::Cons(item, rest) => Some((item, *rest)),
-            List::Nil => None,
+            LinkedList::Cons(item, rest) => Some((item, *rest)),
+            LinkedList::Nil => None,
         }
     }
 
@@ -151,37 +143,39 @@ impl<'a, T> List<T> {
     /// # Examples
     ///
     /// ```
-    /// use structures::list::List;
+    /// use structures::list::LinkedList;
     ///
-    /// let list_a = List::new().push(0)
+    /// let list_a = LinkedList::new().push(0)
     ///                               .push(1)
     ///                               .push(2)
     ///                               .insert(1, 42)
     ///                               .unwrap();
-    /// let list_b = List::new().push(0)
+    /// let list_b = LinkedList::new().push(0)
     ///                               .push(1)
     ///                               .push(42)
     ///                               .push(2);
     ///
     /// assert_eq!(list_a, list_b);
     /// ```
-    pub fn insert(self, index: usize, item: T) -> Result<List<T>, List<T>> {
+    pub fn insert(self, index: usize, item: T) -> MoveResult<LinkedList<T>, T> {
         if index == 0 {
             Ok(self.push(item))
         } else {
             match self {
-                List::Cons(i, r) => {
+                LinkedList::Cons(i, r) => {
                     match r.insert(index - 1, item) {
-                        Ok(l) => Ok(List::Cons(i, Box::new(l))),
-                        Err(l) => Err(List::Cons(i, Box::new(l))),
+                        Ok(l) => Ok(LinkedList::Cons(i, Box::new(l))),
+                        Err(l) => Err(LinkedList::Cons(i, Box::new(l))),
                     }
                 },
-                List::Nil => {
+                LinkedList::Nil => {
                     Err(self)
                 },
             }
         }
     }
+
+
 
     /// Removes an item by index in the list. Like `pop`, both the item and
     /// the rest of the list are moved and returned. Indexing starts at 0, see
@@ -195,33 +189,37 @@ impl<'a, T> List<T> {
     /// # Examples
     ///
     /// ```
-    /// use structures::list::List;
+    /// use structures::list::LinkedList;
     ///
-    /// let (item, list) = List::new().push(1).push(2).push(3).remove(2).unwrap();
+    /// let (item, list) = LinkedList::new().push(1)
+    ///                                     .push(2)
+    ///                                     .push(3)
+    ///                                     .remove(2)
+    ///                                     .unwrap();
     ///
     /// assert_eq!(item, 1);
-    /// assert_eq!(list, List::new().push(2).push(3))
+    /// assert_eq!(list, LinkedList::new().push(2).push(3))
     /// ```
-    pub fn remove(self, index: usize) -> Result<(T, List<T>), List<T>> {
+    pub fn remove(self, index: usize) -> MoveResult<(T, LinkedList<T>), T> {
         match self {
-            List::Cons(i, r) => {
+            LinkedList::Cons(i, r) => {
                 if index == 0 {
                     Ok((i, *r))
                 } else {
                     match r.remove(index - 1) {
-                        Ok((j, l)) => Ok((j, List::Cons(i, Box::new(l)))),
-                        Err(l) => Err(List::Cons(i, Box::new(l))),
+                        Ok((j, l)) => Ok((j, LinkedList::Cons(i, Box::new(l)))),
+                        Err(l) => Err(LinkedList::Cons(i, Box::new(l))),
                     }
                 }
             },
-            List::Nil => {
+            LinkedList::Nil => {
                 Err(self)
             },
         }
     }
 }
 
-/// This trait allows for creation of a `List<T>` from any type that
+/// This trait allows for creation of a `LinkedList<T>` from any type that
 /// implements `IntoIterator<Item=T>`. The beauty here is that this essentially
 /// allows us to make a `List` from anything that is iterable, without
 /// needing to handle different type specially.
@@ -230,16 +228,16 @@ impl<'a, T> List<T> {
 ///
 /// ```
 /// use std::iter::FromIterator;
-/// use structures::list::List;
+/// use structures::list::LinkedList;
 ///
-/// let list_a = List::from_iter((0..10));
-/// let list_b = List::from_iter(vec![0,1,2,3,4,5,6,7,8,9]);
+/// let list_a = LinkedList::from_iter((0..10));
+/// let list_b = LinkedList::from_iter(vec![0,1,2,3,4,5,6,7,8,9]);
 ///
 /// assert_eq!(list_a, list_b);
 /// ```
-impl<T> FromIterator<T> for List<T> {
-    fn from_iter<I: IntoIterator<Item=T>>(iterable: I) -> List<T> {
-        iterable.into_iter().fold(List::new(), List::push)
+impl<T> FromIterator<T> for LinkedList<T> {
+    fn from_iter<I: IntoIterator<Item=T>>(iterable: I) -> LinkedList<T> {
+        iterable.into_iter().fold(LinkedList::new(), LinkedList::push)
     }
 }
 
@@ -254,9 +252,9 @@ impl<T> FromIterator<T> for List<T> {
 /// # Examples
 ///
 /// ```
-/// use structures::list::List;
+/// use structures::list::LinkedList;
 ///
-/// let list = List::new().push("hello")
+/// let list = LinkedList::new().push("hello")
 ///                             .push(" ")
 ///                             .push("world")
 ///                             .push("\n");
@@ -267,7 +265,7 @@ impl<T> FromIterator<T> for List<T> {
 ///
 /// assert_eq!(list.len(), 4);
 /// ```
-impl<'a, T> IntoIterator for &'a List<T> {
+impl<'a, T> IntoIterator for &'a LinkedList<T> {
     type Item = &'a T;
     type IntoIter = Iter<'a, T>;
 
@@ -286,9 +284,9 @@ impl<'a, T> IntoIterator for &'a List<T> {
 /// # Examples
 ///
 /// ```
-/// use structures::list::List;
+/// use structures::list::LinkedList;
 ///
-/// let list = List::new().push("hello")
+/// let list = LinkedList::new().push("hello")
 ///                             .push(" ")
 ///                             .push("world")
 ///                             .push("\n");
@@ -300,7 +298,7 @@ impl<'a, T> IntoIterator for &'a List<T> {
 /// // Compiler error: use of moved value: `list`.
 /// // assert_eq!(list.len(), 4);
 /// ```
-impl<T> IntoIterator for List<T> {
+impl<T> IntoIterator for LinkedList<T> {
     type Item = T;
     type IntoIter = IntoIter<T>;
 
@@ -313,7 +311,7 @@ impl<T> Iterator for IntoIter<T> {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        let current = mem::replace(&mut self.current, List::Nil);
+        let current = mem::replace(&mut self.current, LinkedList::Nil);
         current.pop().map(|(item, rest)| {
             self.current = rest;
             item
@@ -326,11 +324,12 @@ impl<'a, T> Iterator for Iter<'a, T> {
 
     fn next(&mut self) -> Option<&'a T> {
         match self.current {
-            &List::Cons(ref val, ref next) => {
+            // TODO: Revisit ref.
+            &LinkedList::Cons(ref val, ref next) => {
                 self.current = next;
                 Some(val)
             },
-            &List::Nil => {
+            &LinkedList::Nil => {
                 None
             },
         }
@@ -340,18 +339,18 @@ impl<'a, T> Iterator for Iter<'a, T> {
 #[cfg(test)]
 mod test {
     use std::iter::FromIterator;
-    use super::List;
+    use super::LinkedList;
 
     #[test]
     fn List_new() {
-        let new_list: List<u32> = List::new();
-        let list = List::Nil;
+        let new_list: LinkedList<u32> = LinkedList::new();
+        let list = LinkedList::Nil;
         assert_eq!(new_list, list);
     }
 
     #[test]
     fn List_is_empty() {
-        let is_empty_list = List::new();
+        let is_empty_list = LinkedList::new();
         assert!(is_empty_list.is_empty());
         let is_empty_list = is_empty_list.push(1);
         assert!(!is_empty_list.is_empty());
@@ -359,46 +358,46 @@ mod test {
 
     #[test]
     fn List_len() {
-        let len_list = List::new().push(1).push(2).push(3);
+        let len_list = LinkedList::new().push(1).push(2).push(3);
         assert_eq!(len_list.len(), 3);
     }
 
     #[test]
     fn List_push() {
-        let push_list = List::new().push(1).push(2);
-        let list = List::Cons(2, Box::new(List::Cons(1, Box::new(List::Nil))));
+        let push_list = LinkedList::new().push(1).push(2);
+        let list = LinkedList::Cons(2, Box::new(LinkedList::Cons(1, Box::new(LinkedList::Nil))));
         assert_eq!(push_list, list);
     }
 
     #[test]
     fn List_pop() {
-        let (item, pop_list) = List::new().push(1).push(2).pop().unwrap();
-        let list = List::Cons(1, Box::new(List::Nil));
+        let (item, pop_list) = LinkedList::new().push(1).push(2).pop().unwrap();
+        let list = LinkedList::Cons(1, Box::new(LinkedList::Nil));
         assert_eq!(item, 2);
         assert_eq!(pop_list, list);
     }
 
     #[test]
     fn List_insert_in_bounds() {
-        let list = List::new().push(4).push(3).push(1).insert(1, 2).unwrap();
+        let list = LinkedList::new().push(4).push(3).push(1).insert(1, 2).unwrap();
         assert_eq!(Vec::from_iter(list), vec![1, 2, 3, 4]);
     }
 
     #[test]
     fn List_insert_at_bounds() {
-        let list = List::new().push(2).insert(1, 12).unwrap();
-        assert_eq!(list, List::new().push(12).push(2));
+        let list = LinkedList::new().push(2).insert(1, 12).unwrap();
+        assert_eq!(list, LinkedList::new().push(12).push(2));
     }
 
     #[test]
     fn List_insert_out_of_bounds() {
-        let list = List::new().push(2).insert(2, 12).unwrap_err();
-        assert_eq!(list, List::new().push(2));
+        let list = LinkedList::new().push(2).insert(2, 12).unwrap_err();
+        assert_eq!(list, LinkedList::new().push(2));
     }
 
     #[test]
     fn List_remove_in_bounds() {
-        let (item, list) = List::new().push(4).push(3).push(2)
+        let (item, list) = LinkedList::new().push(4).push(3).push(2)
                                       .push(1).remove(1).unwrap();
         assert_eq!(item, 2);
         assert_eq!(Vec::from_iter(list), vec![1, 3, 4]);
@@ -406,7 +405,7 @@ mod test {
 
     #[test]
     fn List_remove_at_bounds() {
-        let (item, list) = List::new().push(4).push(3).push(2)
+        let (item, list) = LinkedList::new().push(4).push(3).push(2)
                                       .push(1).remove(3).unwrap();
         assert_eq!(item, 4);
         assert_eq!(Vec::from_iter(list), vec![1, 2, 3]);
@@ -414,8 +413,8 @@ mod test {
 
     #[test]
     fn List_remove_out_of_bounds() {
-        let list = List::new().push(2).remove(1).unwrap_err();
-        assert_eq!(list, List::new().push(2));
+        let list = LinkedList::new().push(2).remove(1).unwrap_err();
+        assert_eq!(list, LinkedList::new().push(2));
     }
 
     #[test]
@@ -423,7 +422,7 @@ mod test {
 
     #[test]
     fn Iter() {
-        let list: List<u32> = List::new().push(1).push(2).push(3);
+        let list: LinkedList<u32> = LinkedList::new().push(1).push(2).push(3);
         for i in &list {
             assert!((1 <= *i) && (*i <= 3));
         }
@@ -431,7 +430,7 @@ mod test {
 
     #[test]
     fn IntoIter() {
-        let list: List<u32> = List::new().push(1).push(2).push(3);
+        let list: LinkedList<u32> = LinkedList::new().push(1).push(2).push(3);
         assert_eq!(Vec::from_iter(list), vec![3, 2, 1]);
     }
 }
