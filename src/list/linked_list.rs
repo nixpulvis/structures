@@ -2,6 +2,8 @@ use std::mem;
 use std::iter::FromIterator;
 
 #[macro_export]
+/// Create a linked list with elements pushed into it. Much like the `vec!`
+/// macro.
 macro_rules! linked_list {
     ($($x:expr),*) => { LinkedList::new()$(.push($x))* };
 }
@@ -39,7 +41,7 @@ pub struct IntoIter<T> {
 
 impl<'a, T> LinkedList<T> {
     /// Return a new empty linked list. This is semantically equivlent to
-    /// writing `List::Nil`.
+    /// `List::Nil`.
     ///
     /// # Examples
     ///
@@ -59,7 +61,8 @@ impl<'a, T> LinkedList<T> {
     /// ```
     /// use structures::list::LinkedList;
     ///
-    /// assert!(LinkedList::Nil::<u32>.is_empty());
+    /// let list = LinkedList::<u32>::new();
+    /// assert!(list.is_empty());
     /// ```
     pub fn is_empty(&self) -> bool {
         match *self {
@@ -77,7 +80,8 @@ impl<'a, T> LinkedList<T> {
     /// ```
     /// use structures::list::LinkedList;
     ///
-    /// assert_eq!(LinkedList::new().push(1).len(), 1);
+    /// let list = LinkedList::new().push(1);
+    /// assert_eq!(list.len(), 1);
     /// ```
     pub fn len(&self) -> usize {
         self.into_iter().count()
