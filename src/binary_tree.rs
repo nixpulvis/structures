@@ -84,6 +84,7 @@ impl<T: PartialEq + PartialOrd + Copy> Default for BinaryTree<T> {
 impl<T: PartialEq + PartialOrd + Copy> Add for BinaryTree<T> {
     type Output = BinaryTree<T>;
 
+    // TODO
     fn add(self, _rhs: BinaryTree<T>) -> BinaryTree<T> {
         self
     }
@@ -92,6 +93,7 @@ impl<T: PartialEq + PartialOrd + Copy> Add for BinaryTree<T> {
 impl<T: PartialEq + PartialOrd + Copy> Iterator for BinaryTree<T> {
     type Item = T;
 
+    // TODO
     fn next(&mut self) -> Option<T> {
         None
     }
@@ -102,21 +104,21 @@ mod test {
     use super::BinaryTree;
 
     #[test]
-    fn BinaryTree_new() {
+    fn test_new() {
         let new_tree: BinaryTree<i32> = BinaryTree::new();
         let tree = BinaryTree::Leaf;
         assert_eq!(new_tree, tree);
     }
 
     #[test]
-    fn BinaryTree_push() {
+    fn test_push() {
         let push_tree = BinaryTree::new().push(42);
         let tree = BinaryTree::Node(42, Box::new(BinaryTree::Leaf), Box::new(BinaryTree::Leaf));
         assert_eq!(push_tree, tree);
     }
 
     // #[test]
-    // fn BinaryTree_pop_first() {
+    // fn test_pop_first() {
     //     let (item, pop_first_tree) = BinaryTree::new().push(5).push(1).push(7).pop_first().unwrap();
     //     let tree = BinaryTree::new().push(5).push(7);
     //     assert_eq!(item, 1);
@@ -124,7 +126,7 @@ mod test {
     // }
 
     #[test]
-    fn BinaryTree_remove() {
+    fn test_remove() {
         let (item, remove_tree) = BinaryTree::new().push(6).push(2).remove(6).unwrap();
         let tree = BinaryTree::Node(2, Box::new(BinaryTree::Leaf), Box::new(BinaryTree::Leaf));
         assert_eq!(item, 6);
@@ -132,26 +134,26 @@ mod test {
     }
 
     #[test]
-    fn BinaryTree_Default_default() {
+    fn test_default() {
         let default_tree: BinaryTree<&str> = BinaryTree::default();
         assert_eq!(default_tree, BinaryTree::Leaf);
     }
 
     // #[test]
-    // fn BinaryTree_Add_add() {
+    // fn test_add() {
     //     let add_tree = BinaryTree::new().push(2).push(5).push(0) +
     //                    BinaryTree::new().push(3).push(1).push(7);
     //     assert_eq!(add_tree.count(), 6);
     // }
-    //
+    
     // #[test]
-    // fn BinaryTree_Iterator_count() {
+    // fn test_count() {
     //     let count_tree = BinaryTree::new().push(12).push(2);
     //     assert_eq!(count_tree.count(), 2);
     // }
-    //
+    
     // #[test]
-    // fn BinaryTree_Iterator_collect() {
+    // fn test_collect() {
     //     let collect_tree = BinaryTree::new().push(2).push(5).push(0);
     //     assert_eq!(collect_tree.collect::<Vec<i32>>(), [0, 2, 5]);
     // }

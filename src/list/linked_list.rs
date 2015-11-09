@@ -346,14 +346,14 @@ mod test {
     use super::LinkedList;
 
     #[test]
-    fn List_new() {
+    fn test_new() {
         let new_list: LinkedList<u32> = LinkedList::new();
         let list = LinkedList::Nil;
         assert_eq!(new_list, list);
     }
 
     #[test]
-    fn List_is_empty() {
+    fn test_is_empty() {
         let is_empty_list = LinkedList::new();
         assert!(is_empty_list.is_empty());
         let is_empty_list = is_empty_list.push(1);
@@ -361,20 +361,20 @@ mod test {
     }
 
     #[test]
-    fn List_len() {
+    fn test_len() {
         let len_list = LinkedList::new().push(1).push(2).push(3);
         assert_eq!(len_list.len(), 3);
     }
 
     #[test]
-    fn List_push() {
+    fn test_push() {
         let push_list = LinkedList::new().push(1).push(2);
         let list = LinkedList::Cons(2, Box::new(LinkedList::Cons(1, Box::new(LinkedList::Nil))));
         assert_eq!(push_list, list);
     }
 
     #[test]
-    fn List_pop() {
+    fn test_pop() {
         let (item, pop_list) = LinkedList::new().push(1).push(2).pop().unwrap();
         let list = LinkedList::Cons(1, Box::new(LinkedList::Nil));
         assert_eq!(item, 2);
@@ -382,25 +382,25 @@ mod test {
     }
 
     #[test]
-    fn List_insert_in_bounds() {
+    fn test_insert_in_bounds() {
         let list = LinkedList::new().push(4).push(3).push(1).insert(1, 2).unwrap();
         assert_eq!(Vec::from_iter(list), vec![1, 2, 3, 4]);
     }
 
     #[test]
-    fn List_insert_at_bounds() {
+    fn test_insert_at_bounds() {
         let list = LinkedList::new().push(2).insert(1, 12).unwrap();
         assert_eq!(list, LinkedList::new().push(12).push(2));
     }
 
     #[test]
-    fn List_insert_out_of_bounds() {
+    fn test_insert_out_of_bounds() {
         let list = LinkedList::new().push(2).insert(2, 12).unwrap_err();
         assert_eq!(list, LinkedList::new().push(2));
     }
 
     #[test]
-    fn List_remove_in_bounds() {
+    fn test_remove_in_bounds() {
         let (item, list) = LinkedList::new().push(4).push(3).push(2)
                                       .push(1).remove(1).unwrap();
         assert_eq!(item, 2);
@@ -408,7 +408,7 @@ mod test {
     }
 
     #[test]
-    fn List_remove_at_bounds() {
+    fn test_remove_at_bounds() {
         let (item, list) = LinkedList::new().push(4).push(3).push(2)
                                       .push(1).remove(3).unwrap();
         assert_eq!(item, 4);
@@ -416,16 +416,16 @@ mod test {
     }
 
     #[test]
-    fn List_remove_out_of_bounds() {
+    fn test_remove_out_of_bounds() {
         let list = LinkedList::new().push(2).remove(1).unwrap_err();
         assert_eq!(list, LinkedList::new().push(2));
     }
 
-    #[test]
-    fn List_append() {}
+    // #[test]
+    // fn test_append() {}
 
     #[test]
-    fn Iter() {
+    fn test_iter() {
         let list: LinkedList<u32> = LinkedList::new().push(1).push(2).push(3);
         for i in &list {
             assert!((1 <= *i) && (*i <= 3));
@@ -433,7 +433,7 @@ mod test {
     }
 
     #[test]
-    fn IntoIter() {
+    fn test_into_iter() {
         let list: LinkedList<u32> = LinkedList::new().push(1).push(2).push(3);
         assert_eq!(Vec::from_iter(list), vec![3, 2, 1]);
     }
