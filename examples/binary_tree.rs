@@ -1,6 +1,6 @@
 extern crate structures;
 
-use structures::binary_tree::BinaryTree;
+use structures::tree::BinaryTree;
 
 fn main() {
     let tree = BinaryTree::new().push(1);
