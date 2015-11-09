@@ -18,8 +18,14 @@
 //! // Easily create a linked list.
 //! let list = LinkedList::from_iter((0..100));
 //! assert_eq!(list.len(), 100);
+//!
+//! // Or a doubly linked list.
+//! //let dlist = DoublyLinkedList::from_iter((0..100));
+//! //assert_eq!(list.len(), 100);
 //! ```
 
-pub use list::linked_list::{LinkedList};
+pub use list::linked_list::LinkedList;
+pub use list::doubly_linked_list::DoublyLinkedList;
 
 pub mod linked_list;
+pub mod doubly_linked_list;
