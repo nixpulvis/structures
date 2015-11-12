@@ -18,7 +18,7 @@ pub struct Graph<K: Copy + Hash + Eq, V, E: Copy> {
     nodes: HashMap<K, Box<Node<K, V, E>>>,
 }
 
-/// A node containing some data and adjacent nodes.
+/// A node containing some value and adjacent nodes.
 #[derive(Debug)]
 struct Node<K: Copy + Hash + Eq, V, E: Copy> {
     value: V,
@@ -27,11 +27,11 @@ struct Node<K: Copy + Hash + Eq, V, E: Copy> {
 
 /// An edge pointing to a node's index.
 ///
-/// Edges also contain data, which is of some type `E`. This allows for
+/// Edges also contain a value, which is of some type `E`. This allows for
 /// representing weighted graphs or other kinds of data structures.
 #[derive(Debug)]
 struct Edge<K: Copy + Hash + Eq, E: Copy> {
-    data: E,
+    value: E,
     adjacency: K,
 }
 
@@ -42,7 +42,7 @@ impl<K: Copy + Hash + Eq, V, E: Copy> Graph<K, V, E> {
         Graph { nodes: HashMap::new() }
     }
 
-    /// Add a node to the graph. This node will have the given data, and
+    /// Add a node to the graph. This node will have the given value, and
     /// no adjacencies.
     pub fn add_node(&mut self, key: K, value: V) {
         self.nodes.insert(key, Box::new(Node::new(value)));
@@ -52,18 +52,18 @@ impl<K: Copy + Hash + Eq, V, E: Copy> Graph<K, V, E> {
     ///
     /// If `typ` is `EdgeType::Bidirectional` then an edge from `b` to `a`
     /// is also created.
-    pub fn add_edge(&mut self, a: K, b: K, data: E, typ: EdgeType) {
+    pub fn add_edge(&mut self, a: K, b: K, value: E, typ: EdgeType) {
         if self.nodes.contains_key(&a) && self.nodes.contains_key(&b) {
             match typ {
                 EdgeType::Directional => {
                     self.nodes.get_mut(&a).expect("has this key")
-                        .add_adjacency(Edge::new(data, b));
+                        .add_adjacency(Edge::new(value, b));
                 },
                 EdgeType::Bidirectional => {
                     self.nodes.get_mut(&a).expect("has this key")
-                        .add_adjacency(Edge::new(data, b));
+                        .add_adjacency(Edge::new(value, b));
                     self.nodes.get_mut(&b).expect("has this key")
-                        .add_adjacency(Edge::new(data, a));
+                        .add_adjacency(Edge::new(value, a));
                 },
             }
         }
@@ -87,9 +87,9 @@ impl<K: Copy + Hash + Eq, V, E: Copy> Node<K, V, E> {
 
 impl<K: Copy + Hash + Eq, E: Copy> Edge<K, E> {
     /// Create a new edge to the given node's index.
-    fn new(data: E, adjacency: K) -> Self {
+    fn new(value: E, adjacency: K) -> Self {
         Edge {
-            data: data,
+            value: value,
             adjacency: adjacency,
         }
     }
