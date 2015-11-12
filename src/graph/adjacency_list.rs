@@ -19,7 +19,7 @@ pub struct Graph<K: Hash + Eq, V, E: Copy> {
 
 /// A node containing some value and adjacent nodes.
 #[derive(Debug)]
-struct Node<K: Hash + Eq, V, E: Copy> {
+pub struct Node<K: Hash + Eq, V, E: Copy> {
     value: V,
     adjacencies: Vec<Edge<K, E>>,
 }
@@ -29,8 +29,9 @@ struct Node<K: Hash + Eq, V, E: Copy> {
 /// Edges also contain a value, which is of some type `E`. This allows for
 /// representing weighted graphs or other kinds of data structures.
 #[derive(Debug)]
-struct Edge<K: Hash + Eq, E: Copy> {
+pub struct Edge<K: Hash + Eq, E: Copy> {
     value: E,
+    // TODO: Want to save a  reference here.
     adjacency: K,
 }
 
@@ -53,6 +54,11 @@ impl<K: Hash + Eq, V, E: Copy> Graph<K, V, E> {
             self.nodes.get_mut(&a).expect("has this key")
                 .add_adjacency(Edge::new(value, b));
         }
+    }
+
+    /// Returns the node of the given key if it is in the graph.
+    pub fn get(&self, key: &K) -> Option<&Box<Node<K, V, E>>> {
+        self.nodes.get(key)
     }
 
     /// Add an edge to the graph from `a` to `b`.
@@ -80,6 +86,15 @@ impl<K: Hash + Eq, V, E: Copy> Node<K, V, E> {
     fn add_adjacency(&mut self, adjacency: Edge<K, E>) {
         self.adjacencies.push(adjacency);
     }
+
+    /// Returns a reference to the list of adjacencies edges for this node.
+    pub fn edges<'a>(&'a self) -> &'a Vec<Edge<K, E>> {
+        self.adjacencies.as_ref()
+    }
+
+    pub fn nodes(&self) {
+        self.adjacencies.iter().map(|e| { e. })
+    }
 }
 
 impl<K: Hash + Eq, E: Copy> Edge<K, E> {
@@ -96,16 +111,4 @@ impl<K: Hash + Eq, E: Copy> Edge<K, E> {
 #[cfg(test)]
 mod test {
     use super::*;
-
-    // TODO
-    #[test]
-    fn test_nothing() {
-        let mut graph = Graph::new();
-        graph.add_node(1, 2);
-        graph.add_node(2, 3);
-        graph.add_edge(1, 2, "test");
-        graph.connect(1, 2, "bi");
-        println!("{:?}", graph);
-        assert!(false);
-    }
 }
