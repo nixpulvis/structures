@@ -1,7 +1,6 @@
 use std::hash::Hash;
 // TODO: Use our own hash map.
 use std::collections::HashMap;
-use graph::EdgeType;
 
 
 /// A standard adjacency list implementation of a graph.
@@ -14,13 +13,13 @@ use graph::EdgeType;
 ///
 /// [1]: https://en.wikipedia.org/wiki/Adjacency_list
 #[derive(Debug)]
-pub struct Graph<K: Copy + Hash + Eq, V, E: Copy> {
+pub struct Graph<K: Hash + Eq, V, E: Copy> {
     nodes: HashMap<K, Box<Node<K, V, E>>>,
 }
 
 /// A node containing some value and adjacent nodes.
 #[derive(Debug)]
-struct Node<K: Copy + Hash + Eq, V, E: Copy> {
+struct Node<K: Hash + Eq, V, E: Copy> {
     value: V,
     adjacencies: Vec<Edge<K, E>>,
 }
@@ -30,13 +29,13 @@ struct Node<K: Copy + Hash + Eq, V, E: Copy> {
 /// Edges also contain a value, which is of some type `E`. This allows for
 /// representing weighted graphs or other kinds of data structures.
 #[derive(Debug)]
-struct Edge<K: Copy + Hash + Eq, E: Copy> {
+struct Edge<K: Hash + Eq, E: Copy> {
     value: E,
     adjacency: K,
 }
 
 
-impl<K: Copy + Hash + Eq, V, E: Copy> Graph<K, V, E> {
+impl<K: Hash + Eq, V, E: Copy> Graph<K, V, E> {
     /// Create a new graph with no nodes are edges.
     pub fn new() -> Self {
         Graph { nodes: HashMap::new() }
@@ -49,28 +48,26 @@ impl<K: Copy + Hash + Eq, V, E: Copy> Graph<K, V, E> {
     }
 
     /// Add an edge to the graph from `a` to `b`.
-    ///
-    /// If `typ` is `EdgeType::Bidirectional` then an edge from `b` to `a`
-    /// is also created.
-    pub fn add_edge(&mut self, a: K, b: K, value: E, typ: EdgeType) {
+    pub fn add_edge(&mut self, a: K, b: K, value: E) {
         if self.nodes.contains_key(&a) && self.nodes.contains_key(&b) {
-            match typ {
-                EdgeType::Directional => {
-                    self.nodes.get_mut(&a).expect("has this key")
-                        .add_adjacency(Edge::new(value, b));
-                },
-                EdgeType::Bidirectional => {
-                    self.nodes.get_mut(&a).expect("has this key")
-                        .add_adjacency(Edge::new(value, b));
-                    self.nodes.get_mut(&b).expect("has this key")
-                        .add_adjacency(Edge::new(value, a));
-                },
-            }
+            self.nodes.get_mut(&a).expect("has this key")
+                .add_adjacency(Edge::new(value, b));
+        }
+    }
+
+    /// Add an edge to the graph from `a` to `b`.
+    pub fn connect(&mut self, a: K, b: K, value: E)
+    where K: Copy {
+        if self.nodes.contains_key(&a) && self.nodes.contains_key(&b) {
+            self.nodes.get_mut(&a).expect("has this key")
+                .add_adjacency(Edge::new(value, b));
+            self.nodes.get_mut(&b).expect("has this key")
+                .add_adjacency(Edge::new(value, a));
         }
     }
 }
 
-impl<K: Copy + Hash + Eq, V, E: Copy> Node<K, V, E> {
+impl<K: Hash + Eq, V, E: Copy> Node<K, V, E> {
     /// Create a new node, with no adjacencies.
     fn new(value: V) -> Self {
         Node {
@@ -85,7 +82,7 @@ impl<K: Copy + Hash + Eq, V, E: Copy> Node<K, V, E> {
     }
 }
 
-impl<K: Copy + Hash + Eq, E: Copy> Edge<K, E> {
+impl<K: Hash + Eq, E: Copy> Edge<K, E> {
     /// Create a new edge to the given node's index.
     fn new(value: E, adjacency: K) -> Self {
         Edge {
@@ -98,7 +95,6 @@ impl<K: Copy + Hash + Eq, E: Copy> Edge<K, E> {
 
 #[cfg(test)]
 mod test {
-    use graph::EdgeType;
     use super::*;
 
     // TODO
@@ -107,7 +103,8 @@ mod test {
         let mut graph = Graph::new();
         graph.add_node(1, 2);
         graph.add_node(2, 3);
-        graph.add_edge(1, 2, "test", EdgeType::Directional);
+        graph.add_edge(1, 2, "test");
+        graph.connect(1, 2, "bi");
         println!("{:?}", graph);
         assert!(false);
     }

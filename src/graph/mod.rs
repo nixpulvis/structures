@@ -20,9 +20,3 @@
 
 /// Graphs represented as nodes with lists of adjacencies.
 pub mod adjacency_list;
-
-/// Types of edges, some graphs do not support all types.
-pub enum EdgeType {
-    Directional,
-    Bidirectional,
-}
