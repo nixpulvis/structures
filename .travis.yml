@@ -1,8 +1,18 @@
+---
 language: rust
 rust:
   - stable
   - beta
   - nightly
-matrix:
-  allow_failure:
-    - rust: nightly
+sudo: false
+
+script:
+  - cargo test
+  - cargo doc --no-deps
+
+after_success:
+  - test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && bash deploy.sh
+
+env:
+  global:
+    secure: "x8FRV7ofFnWtC/1ypN2qXvGA0H4ezjg8IGtjBa71OjGMKQoWyT6+MQzRQIJb98bAf+XhGfQpRTDLNAyw3dExpWusZP5zncSSu0bWkYSQeDEMivu6d4iNy3Yzl4JcUz2wXHarchqC4VdEzmsA+HgUag0MkfmCOMVX8Igvj+WE7miLTyyWVARerweVN1J5aozpk6akkkzUArDIcc4lRSZoJIzvn4fWJlMv9HR5G/RUVH/aN6Q8J6Z34ruXaZlUVP6G5GIcHV/MhKuye2kqVKx5HTO99AgpWzGbkzqVv8uvaOWuA4SpJKxWQ9PCW8oVOBmr+sPZDxFykgT3KGrp4hwDB6eOiTVGhvQVstXbtmw1vq8UN4Cg+7bMrrtkZHH4kIuyT+BU3UkkkZruxcZ8AqPs3CHjKtbiubDBv2ppftY7ovxdim1LqVheDHokLezR2HxpWovqvPLyDiHQk9qB+VIEg1EKma0tu3SYkW0Krjc1VRJhAIz3h95V8YFzBiGb7hzUeK7UUzVwG+qjIIWe7PSHaMk3/m1515czPU325lBduFjv2O3Xv3kk5gf9Y6AGLt94d0CGBDD8t97JkPHcMwVSDa7L+M8TTizwRWcVb+PyDdYFdE5Tm8anC0tueo0JTGwkcz6aDhqRXXnzUo9jQeUBvIOD6ChT7Dh6RkeQg7uHEK8="
