@@ -1,3 +1,4 @@
+use std::borrow::Borrow;
 use std::hash::Hash;
 // TODO: Use our own hash map.
 use std::collections::HashMap;
@@ -14,7 +15,7 @@ use std::collections::HashMap;
 /// [1]: https://en.wikipedia.org/wiki/Adjacency_list
 #[derive(Debug)]
 pub struct Graph<K: Hash + Eq, V, E: Copy> {
-    nodes: HashMap<K, Box<Node<K, V, E>>>,
+    nodes: HashMap<K, Node<K, V, E>>,
 }
 
 /// A node containing some value and adjacent nodes.
@@ -44,24 +45,25 @@ impl<K: Hash + Eq, V, E: Copy> Graph<K, V, E> {
 
     /// Add a node to the graph. This node will have the given value, and
     /// no adjacencies.
-    pub fn add_node(&mut self, key: K, value: V) {
-        self.nodes.insert(key, Box::new(Node::new(value)));
+    pub fn push(&mut self, key: K, value: V) {
+        self.nodes.insert(key, Node::new(value));
+    }
+
+    /// Returns the node of the given key if it is in the graph.
+    pub fn get<Q: ?Sized>(&self, key: &Q) -> Option<&Node<K, V, E>>
+    where K: Borrow<Q>, Q: Hash + Eq {
+        self.nodes.get(key)
     }
 
     /// Add an edge to the graph from `a` to `b`.
-    pub fn add_edge(&mut self, a: K, b: K, value: E) {
+    pub fn link(&mut self, a: K, b: K, value: E) {
         if self.nodes.contains_key(&a) && self.nodes.contains_key(&b) {
             self.nodes.get_mut(&a).expect("has this key")
                 .add_adjacency(Edge::new(value, b));
         }
     }
 
-    /// Returns the node of the given key if it is in the graph.
-    pub fn get(&self, key: &K) -> Option<&Box<Node<K, V, E>>> {
-        self.nodes.get(key)
-    }
-
-    /// Add an edge to the graph from `a` to `b`.
+    /// Add an edge to the graph from `a` to `b` and from `b` to `a`.
     pub fn connect(&mut self, a: K, b: K, value: E)
     where K: Copy {
         if self.nodes.contains_key(&a) && self.nodes.contains_key(&b) {
@@ -85,15 +87,6 @@ impl<K: Hash + Eq, V, E: Copy> Node<K, V, E> {
     /// Adds an edge to this node's adjacencies.
     fn add_adjacency(&mut self, adjacency: Edge<K, E>) {
         self.adjacencies.push(adjacency);
-    }
-
-    /// Returns a reference to the list of adjacencies edges for this node.
-    pub fn edges<'a>(&'a self) -> &'a Vec<Edge<K, E>> {
-        self.adjacencies.as_ref()
-    }
-
-    pub fn nodes(&self) {
-        self.adjacencies.iter().map(|e| { e. })
     }
 }
 
