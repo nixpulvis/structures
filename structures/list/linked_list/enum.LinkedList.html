@@ -45,7 +45,7 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-14' class='srclink' href='../../../src/structures/list/linked_list.rs.html#27-30' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-20' class='srclink' href='../../../src/structures/list/linked_list.rs.html#27-30' title='goto source code'>[src]</a></span></h1>
 <pre class='rust enum'>pub enum LinkedList&lt;T&gt; {
     Cons(T, <a class='struct' href='https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html' title='alloc::boxed::Box'>Box</a>&lt;<a class='enum' href='../../../structures/list/linked_list/enum.LinkedList.html' title='structures::list::linked_list::LinkedList'>LinkedList</a>&lt;T&gt;&gt;),
     Nil,
@@ -59,14 +59,16 @@ use this data structure in real world applications.</p>
 <div class='docblock'><p>Return a new empty linked list. This is semantically equivlent to
 <code>List::Nil</code>.</p>
 
-<h1 id='examples' class='section-header'><a href='#examples'>Examples</a></h1><pre class='rust rust-example-rendered'>
+<h1 id="examples" class='section-header'><a
+                           href="#examples">Examples</a></h1><pre class='rust rust-example-rendered'>
 <span class='kw'>use</span> <span class='ident'>structures</span>::<span class='ident'>list</span>::<span class='ident'>LinkedList</span>;
 
 <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>LinkedList</span>::<span class='ident'>new</span>(), <span class='ident'>LinkedList</span>::<span class='ident'>Nil</span>::<span class='op'>&lt;</span><span class='ident'>u32</span><span class='op'>&gt;</span>);</pre>
 </div><h4 id='method.is_empty' class='method'><code>fn <a href='#method.is_empty' class='fnname'>is_empty</a>(&amp;self) -&gt; <a href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
 <div class='docblock'><p>Determine if a linked list is empty.</p>
 
-<h1 id='examples' class='section-header'><a href='#examples'>Examples</a></h1><pre class='rust rust-example-rendered'>
+<h1 id="examples" class='section-header'><a
+                           href="#examples">Examples</a></h1><pre class='rust rust-example-rendered'>
 <span class='kw'>use</span> <span class='ident'>structures</span>::<span class='ident'>list</span>::<span class='ident'>LinkedList</span>;
 
 <span class='kw'>let</span> <span class='ident'>list</span> <span class='op'>=</span> <span class='ident'>LinkedList</span>::<span class='op'>&lt;</span><span class='ident'>u32</span><span class='op'>&gt;</span>::<span class='ident'>new</span>();
@@ -76,7 +78,8 @@ use this data structure in real world applications.</p>
 of <code>into_iter()</code> for creating a iterator over references to the
 elements.</p>
 
-<h1 id='examples' class='section-header'><a href='#examples'>Examples</a></h1><pre class='rust rust-example-rendered'>
+<h1 id="examples" class='section-header'><a
+                           href="#examples">Examples</a></h1><pre class='rust rust-example-rendered'>
 <span class='kw'>use</span> <span class='ident'>structures</span>::<span class='ident'>list</span>::<span class='ident'>LinkedList</span>;
 
 <span class='kw'>let</span> <span class='ident'>list</span> <span class='op'>=</span> <span class='ident'>LinkedList</span>::<span class='ident'>new</span>().<span class='ident'>push</span>(<span class='number'>1</span>);
@@ -86,7 +89,8 @@ elements.</p>
 because we return the new list containing the item, and the old now
 moved list.</p>
 
-<h1 id='examples' class='section-header'><a href='#examples'>Examples</a></h1><pre class='rust rust-example-rendered'>
+<h1 id="examples" class='section-header'><a
+                           href="#examples">Examples</a></h1><pre class='rust rust-example-rendered'>
 <span class='kw'>use</span> <span class='ident'>structures</span>::<span class='ident'>list</span>::<span class='ident'>LinkedList</span>;
 
 <span class='kw'>let</span> <span class='ident'>list_a</span> <span class='op'>=</span> <span class='ident'>LinkedList</span>::<span class='ident'>new</span>().<span class='ident'>push</span>(<span class='number'>2</span>).<span class='ident'>push</span>(<span class='number'>1</span>);
@@ -102,7 +106,8 @@ Here <code>Nil</code> represents the end of the list, and contains no item. The
 returned values are moved, so it&#39;s important store them if they are
 needed later.</p>
 
-<h1 id='examples' class='section-header'><a href='#examples'>Examples</a></h1><pre class='rust rust-example-rendered'>
+<h1 id="examples" class='section-header'><a
+                           href="#examples">Examples</a></h1><pre class='rust rust-example-rendered'>
 <span class='kw'>use</span> <span class='ident'>structures</span>::<span class='ident'>list</span>::<span class='ident'>LinkedList</span>;
 
 <span class='kw'>let</span> <span class='ident'>list</span> <span class='op'>=</span> <span class='ident'>LinkedList</span>::<span class='ident'>new</span>().<span class='ident'>push</span>(<span class='string'>&quot;bye&quot;</span>).<span class='ident'>push</span>(<span class='string'>&quot;hi&quot;</span>);
@@ -124,7 +129,8 @@ order of these elements is maintained.</p>
 out of bounds. In this case, the original list is returned in the
 <code>Err</code> to allow for it&#39;s continued use.</p>
 
-<h1 id='examples' class='section-header'><a href='#examples'>Examples</a></h1><pre class='rust rust-example-rendered'>
+<h1 id="examples" class='section-header'><a
+                           href="#examples">Examples</a></h1><pre class='rust rust-example-rendered'>
 <span class='kw'>use</span> <span class='ident'>structures</span>::<span class='ident'>list</span>::<span class='ident'>LinkedList</span>;
 
 <span class='kw'>let</span> <span class='ident'>list_a</span> <span class='op'>=</span> <span class='ident'>LinkedList</span>::<span class='ident'>new</span>().<span class='ident'>push</span>(<span class='number'>0</span>)
@@ -148,7 +154,8 @@ persisted elements is unchanged.</p>
 out of bounds. In this case, the original list is returned in the
 <code>Err</code> to allow for it&#39;s continued use.</p>
 
-<h1 id='examples' class='section-header'><a href='#examples'>Examples</a></h1><pre class='rust rust-example-rendered'>
+<h1 id="examples" class='section-header'><a
+                           href="#examples">Examples</a></h1><pre class='rust rust-example-rendered'>
 <span class='kw'>use</span> <span class='ident'>structures</span>::<span class='ident'>list</span>::<span class='ident'>LinkedList</span>;
 
 <span class='kw'>let</span> (<span class='ident'>item</span>, <span class='ident'>list</span>) <span class='op'>=</span> <span class='ident'>LinkedList</span>::<span class='ident'>new</span>().<span class='ident'>push</span>(<span class='number'>1</span>)
@@ -164,7 +171,8 @@ implements <code>IntoIterator&lt;Item=T&gt;</code>. The beauty here is that this
 allows us to make a <code>List</code> from anything that is iterable, without
 needing to handle different type specially.</p>
 
-<h1 id='examples' class='section-header'><a href='#examples'>Examples</a></h1><pre class='rust rust-example-rendered'>
+<h1 id="examples" class='section-header'><a
+                           href="#examples">Examples</a></h1><pre class='rust rust-example-rendered'>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>iter</span>::<span class='ident'>FromIterator</span>;
 <span class='kw'>use</span> <span class='ident'>structures</span>::<span class='ident'>list</span>::<span class='ident'>LinkedList</span>;
 
@@ -181,7 +189,8 @@ iterator over type <code>T</code> anywhere that accepts <code>IntoIterator&lt;It
 <p>This trait implementation yields <code>Iter</code>s which iterate over references
 without moving data.</p>
 
-<h1 id='examples' class='section-header'><a href='#examples'>Examples</a></h1><pre class='rust rust-example-rendered'>
+<h1 id="examples" class='section-header'><a
+                           href="#examples">Examples</a></h1><pre class='rust rust-example-rendered'>
 <span class='kw'>use</span> <span class='ident'>structures</span>::<span class='ident'>list</span>::<span class='ident'>LinkedList</span>;
 
 <span class='kw'>let</span> <span class='ident'>list</span> <span class='op'>=</span> <span class='ident'>LinkedList</span>::<span class='ident'>new</span>().<span class='ident'>push</span>(<span class='string'>&quot;hello&quot;</span>)
@@ -204,7 +213,8 @@ iterator over type <code>T</code> anywhere that accepts <code>IntoIterator&lt;It
 
 <p>This trait implementation yields <code>IntoIter</code>s which iterate over moved data.</p>
 
-<h1 id='examples' class='section-header'><a href='#examples'>Examples</a></h1><pre class='rust rust-example-rendered'>
+<h1 id="examples" class='section-header'><a
+                           href="#examples">Examples</a></h1><pre class='rust rust-example-rendered'>
 <span class='kw'>use</span> <span class='ident'>structures</span>::<span class='ident'>list</span>::<span class='ident'>LinkedList</span>;
 
 <span class='kw'>let</span> <span class='ident'>list</span> <span class='op'>=</span> <span class='ident'>LinkedList</span>::<span class='ident'>new</span>().<span class='ident'>push</span>(<span class='string'>&quot;hello&quot;</span>)
