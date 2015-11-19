@@ -1,0 +1,1 @@
+initSidebarItems({"macro":[["linked_list!","Create a linked list with elements pushed into it. Much like the `vec!` macro."]],"mod":[["list","Lists are ordered sequences of values, which can be iterated over."],["tree","Trees are non-cyclic graphs with a singular root node."]]});
